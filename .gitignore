@@ -1,0 +1,5 @@
+/venv/
+/.idea
+config.py
+*.db
+rasp.jpeg
