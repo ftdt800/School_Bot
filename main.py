@@ -221,7 +221,6 @@ async def on_startup(_):
 async def time_print(time_str):
     print("Время сейчас, "+time_str)
     sql = sl.connect('DataBase.db')
-    cursor = sql.cursor()
     users = sql.execute("SELECT id FROM USER WHERE notifications='True'").fetchall()
     clas = sql.execute("SELECT class FROM USER WHERE notifications='True'").fetchall()
     for i in range(len(users)):
