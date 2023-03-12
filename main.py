@@ -24,11 +24,6 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 print(admin_id, API_TOKEN)# testing import config file
 # __________________________Данные бота__________________________
-timelist_manday = ["13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]#1-6
-timelist_tuesday = ["18:46","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]#0-6
-timelist_wednesday = ["12:55","13:55", "14:40", "15:35", "16:30", "17:25"]#0-5
-timelist_thursday = ["12:55","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]#0-6
-timelist_friday = ["12:55","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]#0-6
 
 timelist_start = ["13:15","14:00", "14:55", "15:50", "16:45", "17:35", "18:20"]
 timelist_end = ["16:07","12:55","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]
@@ -202,8 +197,8 @@ async def aioschelder_loop():
         await aioschedule.run_pending()
         await asyncio.sleep(1)
 async def on_startup(_):
-    await time_print(time_str="16:30")#debug function
-    return
+    #await time_print(time_str="16:30")#debug function
+    #return
     if datetime.datetime.today().weekday() == 0:
         for date in timelist_end:
             aioschedule.every().monday.at(time_str=date).do(time_print, time_str=date)
@@ -239,7 +234,7 @@ async def time_print(time_str):
             print(textlist[(klass.get(clas[i][0]))])#list all schedule
             usertextlist = textlist[(klass.get(clas[i][0]))]
             #print((str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(","))#+4 for normal work
-        schedulelist_str = (str(usertextlist).split("\n")[datetime.datetime.today().weekday()+2]).split(",")
+        schedulelist_str = (str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(",")
         await bot.send_message(users[i][0], "<u>" + str(schedulelist_str[timelist_end.index(time_str)])+"</u>\n"+ str(secrets.choice(friendlylist)) +"<u>" + str(timelist_end[timelist_end.index(time_str)])+ "</u>", parse_mode="HTML")
 # async def scheduler():
 #     while True:
