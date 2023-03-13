@@ -315,17 +315,6 @@ async def time_print(time_str):
             await bot.send_message(users[i][0], "<u>" + str(schedulelist_str[timelist_end.index(time_str)])+"</u>\n"+ str(secrets.choice(friendlylist)) +"<u>" + str(timelist_end[timelist_end.index(time_str)])+ "</u>", parse_mode="HTML")
         else:
             print("Урока нет, согласно расписанию")
-# async def scheduler():
-#     while True:
-#         for timecicle in timelist_manday:
-#             print(timecicle)
-#             aioschedule.every().day.at(timecicle).do(time_print,timecicle)
-#         print("Воу")
-#         await aioschedule.run_pending()
-#         await asyncio.sleep(2)
-#
-# async def on_startup(_):
-#     asyncio.create_task(scheduler())
 def register_handlers_client(dp: Dispatcher):
     dp.register_callback_query_handler(send_state, cb.filter(action=["send", "application"]), state="*")
     dp.register_callback_query_handler(access, text_contains="#")
