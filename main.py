@@ -25,7 +25,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 print(admin_id, API_TOKEN)# testing import config file
 # __________________________Данные бота__________________________
 timelist_start = ["13:15","14:00", "14:55", "15:50", "16:45", "17:35", "18:20"]
-timelist_end = ["16:07","12:55","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]
+timelist_end = ["12:55","13:55", "14:40", "15:35", "16:30", "17:25", "18:15"]
 friendlylist = ["Как следует отдохни на перемене, и бегом на урок" + emoji.emojize(":smiling_face_with_smiling_eyes:")+ "\nНа часах тем временем уже ",
                 "Надеюсь у тебя остались силы на ещё один урок"+ emoji.emojize(":winking_face:") + "\nУчись хорошо, я буду следить!" + emoji.emojize(":upside-down_face:")+ "\nСейчас ",
                 "Мне тут анекдот вспомнился, как-то раз на экзамене по математике один ученик загнул такое, что даже параллельные линии пересеклись.\nВот умора, я чуть не завис от смеха" + emoji.emojize(":face_with_tears_of_joy:") + "\nА тем временем на часах "
@@ -288,24 +288,12 @@ async def aioschelder_loop():
 async def on_startup(_):
     #await time_print(time_str="16:30")#debug function
     #return
-    if datetime.datetime.today().weekday() == 0:
+    if datetime.datetime.today().weekday() <= 4:
+        print(timelist_end)
         for date in timelist_end:
-            aioschedule.every().monday.at(time_str=date).do(time_print, time_str=date)
-    if datetime.datetime.today().weekday() == 1:
-        for date in timelist_end:
-            aioschedule.every().tuesday.at(time_str=date).do(time_print, time_str=date)
-    if datetime.datetime.today().weekday() == 2:
-        for date in timelist_end:
-            aioschedule.every().wednesday.at(time_str=date).do(time_print, time_str=date)
-    if datetime.datetime.today().weekday() == 3:
-        for date in timelist_end:
-            aioschedule.every().thursday.at(time_str=date).do(time_print, time_str=date)
-    if datetime.datetime.today().weekday() == 4:
-        for date in timelist_end:
-            aioschedule.every().friday.at(time_str=date).do(time_print, time_str=date)
-            print(date)
-    #asyncio.create_task(aioschelder_loop()) #comments for debug function
-    print('Метка вызова времени'+str(datetime.datetime.today().weekday()) + datetime.datetime.today().strftime('%H:%M'))
+            aioschedule.every().day.at(time_str=date).do(time_print, time_str=date)
+    asyncio.create_task(aioschelder_loop()) #comments for debug function
+    print('День недели: '+weekdays.get(datetime.datetime.today().weekday()+1) + "Время: " + datetime.datetime.today().strftime('%H:%M'))
 
 async def time_print(time_str):
     print("Время сейчас, "+time_str)
@@ -323,7 +311,10 @@ async def time_print(time_str):
             usertextlist = textlist[(klass.get(clas[i][0]))]
             #print((str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(","))#+4 for normal work
         schedulelist_str = (str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(",")
-        await bot.send_message(users[i][0], "<u>" + str(schedulelist_str[timelist_end.index(time_str)])+"</u>\n"+ str(secrets.choice(friendlylist)) +"<u>" + str(timelist_end[timelist_end.index(time_str)])+ "</u>", parse_mode="HTML")
+        if not str(schedulelist_str[timelist_end.index(time_str)])[0] == "-":
+            await bot.send_message(users[i][0], "<u>" + str(schedulelist_str[timelist_end.index(time_str)])+"</u>\n"+ str(secrets.choice(friendlylist)) +"<u>" + str(timelist_end[timelist_end.index(time_str)])+ "</u>", parse_mode="HTML")
+        else:
+            print("Урока нет, согласно расписанию")
 # async def scheduler():
 #     while True:
 #         for timecicle in timelist_manday:
