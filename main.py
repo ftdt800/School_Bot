@@ -174,7 +174,7 @@ async def aioschelder_loop():
         await aioschedule.run_pending()
         await asyncio.sleep(1)
 async def on_startup(_):
-    await time_print(time_str="16:30")#debug function
+    await time_print(time_str="15:35")#debug function
     return
     if datetime.datetime.today().weekday() <= 4:
         print(timelist_end)
@@ -192,14 +192,11 @@ async def time_print(time_str):
         print(str(users[i][0])+ " айди")
         print(clas[i][0]+ " класс")
         print(str(datetime.datetime.today().weekday())+ " День недели")
+        print(datetime.datetime.now().strftime("%A") + " Прям день недели")
         print(str(klass.get(clas[i][0]))+ " класс но цыфра")#number klass in base
-        with open('src/rasp.txt', mode="r+", encoding="utf-8") as file:
-            textlist = file.read().split("===")
-            print(textlist[(klass.get(clas[i][0]))])#list all schedule
-            usertextlist = textlist[(klass.get(clas[i][0]))]
-            #usertextlist = sql.execute("SELECT * FROM RASP WHERE class = %s", (clas))
-            #print((str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(","))#+4 for normal work
-        schedulelist_str = (str(usertextlist).split("\n")[datetime.datetime.today().weekday()+4]).split(",")
+        usertextlist = sql.execute(f"SELECT {datetime.datetime.now().strftime('%A').lower()} FROM RASP WHERE class = ?;",
+                                   (clas[i][0],)).fetchall()
+        schedulelist_str = (str(usertextlist[i][0]).split(","))
         if not str(schedulelist_str[timelist_end.index(time_str)])[0] == "-":
             await bot.send_message(users[i][0], "<u>" + str(schedulelist_str[timelist_end.index(time_str)])+"</u>\n"+ str(secrets.choice(friendlylist)) +"<u>" + str(timelist_end[timelist_end.index(time_str)])+ "</u>", parse_mode="HTML")
         else:
