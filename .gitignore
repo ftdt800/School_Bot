@@ -1,6 +1,6 @@
 /venv/
 /.idea
-config.py
+src/config.py
 *.db
-rasp.jpeg
+src/rasp.jpeg
 /.git
