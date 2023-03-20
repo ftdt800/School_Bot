@@ -2,17 +2,10 @@
 from aiogram.utils import executor
 from aiogram.utils.callback_data import CallbackData
 from aiogram.dispatcher import Dispatcher
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-import aiogram
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters.state import State, StatesGroup
 import sqlite3 as sl
 import asyncio
-import datetime
 import aioschedule
-import emoji
 import secrets
 from src.config import *
 from src.admin_functions import *
@@ -174,8 +167,8 @@ async def aioschelder_loop():
         await aioschedule.run_pending()
         await asyncio.sleep(1)
 async def on_startup(_):
-    await time_print(time_str="15:35")#debug function
-    return
+    #await time_print(time_str="15:35")#debug function
+    #return
     if datetime.datetime.today().weekday() <= 4:
         print(timelist_end)
         for date in timelist_end:
@@ -204,7 +197,7 @@ async def time_print(time_str):
 def register_handlers_client(dp: Dispatcher):
     dp.register_callback_query_handler(send_state, cb.filter(action=["send", "application"]), state="*")
     dp.register_callback_query_handler(access, text_contains="#")
-register_handlers_client(dp)  # Запуск обработки событий
+register_handlers_client(dp)  # start dispatcher
 if __name__ == '__main__':
     from src import dp
     print(admin_id, API_TOKEN)  # testing import config file
