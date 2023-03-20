@@ -6,7 +6,7 @@ import aiogram
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
-from main import dp, bot, weekdays, timelist_start
+from main import dp, bot, weekdays, timelist_start, sl
 
 admin_klass = InlineKeyboardMarkup(row_width=2)
 admin_klass.add(InlineKeyboardButton('8A...', callback_data='admin_8A'))
@@ -42,49 +42,50 @@ async def process_callback_button(callback_query: aiogram.types.CallbackQuery):
 
 async def admin_preview_list(callback_query: aiogram.types.CallbackQuery, klass):
     await bot.answer_callback_query(callback_query.id)
+    sql = sl.connect('src/DataBase.db')
     global klass_int
     global schedule_int
     schedule_int = 0
     klass_int = klass
-    with open('src/rasp.txt', mode="r+", encoding="utf-8") as file:
-        textlist = file.read().split("===")  # transform in massive
-        print(textlist[klass_int])
-        print(str(str(textlist[klass_int]).split("\n")[datetime.datetime.today().weekday()]).split(","))
-        schedulelist = str(str(textlist[klass_int]).split("\n")[schedule_int+4]).split(",")
-        Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
-        text = '<u>'+'\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
-        await bot.send_message(callback_query.from_user.id, weekdays.get(schedule_int+1)+"\n"+text, parse_mode="HTML", reply_markup=admin_rasp_inline_full)
+    usertextlist = sql.execute(f"SELECT {(datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.today().weekday())).strftime('%A').lower()} FROM RASP WHERE class_int = ?;",
+                               (klass_int,)).fetchall()
+    schedulelist = (str([i[0] for i in usertextlist][0]).split("\n")[0]).split(",")
+    Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
+    text = '<u>'+'\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
+    await bot.send_message(callback_query.from_user.id, weekdays.get(schedule_int+1)+"\n"+text, parse_mode="HTML", reply_markup=admin_rasp_inline_full)
 @dp.callback_query_handler(lambda c: c.data == 'admin_next_list')#next
 async def process_callback_button(callback_query: aiogram.types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
+    sql = sl.connect('src/DataBase.db')
     global klass_int
     global schedule_int
     if schedule_int < 4:
         schedule_int += 1
-    with open('src/rasp.txt', mode="r+", encoding="utf-8") as file:
-        textlist = file.read().split("===")  # transform in massive
-        print(textlist[klass_int])
-        print(str(str(textlist[klass_int]).split("\n")[datetime.datetime.today().weekday()]).split(","))
-        schedulelist = str(str(textlist[klass_int]).split("\n")[schedule_int+4]).split(",")
-        Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
-        text = '<u>'+'\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
-        await callback_query.message.edit_text(weekdays.get(schedule_int+1)+"\n"+text, parse_mode="HTML", reply_markup=admin_rasp_inline_full)
+    usertextlist = sql.execute(
+        f"SELECT {(datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.today().weekday()-schedule_int)).strftime('%A').lower()} FROM RASP WHERE class_int = ?;",
+        (klass_int,)).fetchall()
+    schedulelist = (str([i[0] for i in usertextlist][0]).split("\n")[0]).split(",")
+    Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
+    text = '<u>' + '\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
+    await callback_query.message.edit_text(weekdays.get(schedule_int+1)+"\n"+text, parse_mode="HTML", reply_markup=admin_rasp_inline_full)
+    print(schedule_int)
 @dp.callback_query_handler(lambda c: c.data == 'admin_back_list')#back
 async def process_callback_button(callback_query: aiogram.types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
+    sql = sl.connect('src/DataBase.db')
     global klass_int
     global schedule_int
     if schedule_int > 0:
         schedule_int -= 1
-    with open('src/rasp.txt', mode="r+", encoding="utf-8") as file:
-        textlist = file.read().split("===")  # transform in massive
-        print(textlist[klass_int])
-        print(str(str(textlist[klass_int]).split("\n")[datetime.datetime.today().weekday()]).split(","))
-        schedulelist = str(str(textlist[klass_int]).split("\n")[schedule_int+4]).split(",")
-        Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
-        text = '<u>'+'\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
-        await callback_query.message.edit_text(weekdays.get(schedule_int+1)+"\n"+text, parse_mode="HTML", reply_markup=admin_rasp_inline_full)
-
+    usertextlist = sql.execute(
+        f"SELECT {(datetime.datetime.now() - datetime.timedelta(days=datetime.datetime.today().weekday() - schedule_int)).strftime('%A').lower()} FROM RASP WHERE class_int = ?;",
+        (klass_int,)).fetchall()
+    schedulelist = (str([i[0] for i in usertextlist][0]).split("\n")[0]).split(",")
+    Massiv_sum = [list(a) for a in zip(timelist_start, schedulelist)]
+    text = '<u>' + '\n<u>'.join('</u> > '.join(l) for l in Massiv_sum)
+    await callback_query.message.edit_text(weekdays.get(schedule_int + 1) + "\n" + text, parse_mode="HTML",
+                                           reply_markup=admin_rasp_inline_full)
+    print(schedule_int)
 @dp.callback_query_handler(lambda c: c.data == 'admin_change_list')
 async def cmd_start(call: CallbackQuery):
     await Form.name.set()
