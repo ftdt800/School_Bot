@@ -26,7 +26,7 @@ API_TOKEN = TOKEN_HERE
 admin_id = ID_HERE
 ```
 * Создать базу данных SQLite3 ```DataBase.db```
-* Установить все библеотеки, и запустить ```main.py```
+* Установить все библиотеки, и запустить ```main.py```
 ## Демо
 
 ![image](https://user-images.githubusercontent.com/79777228/224525175-0035865e-33ee-4594-9854-e639a0265e2c.png)
